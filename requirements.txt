@@ -1,0 +1,9 @@
+Django==5.1.7
+mysqlclient
+python-decouple
+django-taggit
+easy-thumbnails
+django-debug-toolbar
+djangorestframework
+django-axes
+Pillow
