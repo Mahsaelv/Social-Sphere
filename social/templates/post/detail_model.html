@@ -1,0 +1,193 @@
+{# templates/post/detail_model.html #}
+{% load static humanize %}
+
+<main class="flex w-full h-full bg-zinc-900">
+
+  {# — LEFT PANEL: IMAGE — #}
+    <div class="w-2/3 bg-black flex flex-col items-center justify-center relative">
+      {% with main=post.images.first %}
+        {% if main %}
+          <img src="{{ main.image_file.url }}"
+               alt="{{ post.description|truncatechars:20 }}"
+               class="main-image object-contain w-full h-[80%] rounded-lg mb-4"/>
+
+{#          <button class="prev-btn absolute left-4 top-1/2 transform -translate-y-1/2#}
+{#                         bg-black bg-opacity-50 p-2 rounded-full text-white">#}
+{#            ‹#}
+{#          </button>#}
+{#          <button class="next-btn absolute right-4 top-1/2 transform -translate-y-1/2#}
+{#                         bg-black bg-opacity-50 p-2 rounded-full text-white">#}
+{#            ›#}
+{#          </button>#}
+
+        {% else %}
+          <div class="flex items-center justify-center w-full h-[80%] text-zinc-500">
+            No Image
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {# thumbnails of other images #}
+      {% if post.images.count > 1 %}
+        <div class="flex space-x-2 overflow-x-auto px-4 mt-4">
+          {% for img in post.images.all %}
+            <img src="{{ img.image_file.url }}"
+                 class="w-20 h-20 object-cover rounded cursor-pointer hover:opacity-75"
+                 onclick="document.querySelector('.main-image').src='{{ img.image_file.url }}'"/>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {# — RIGHT PANEL: INFO & COMMENTS — #}
+  <div class="w-1/3 flex flex-col bg-zinc-900">
+
+    {# — Header: avatar, username, follow/unfollow — #}
+    <header class="flex items-center justify-between px-4 pr-12 py-3 bg-zinc-800 border-b border-zinc-700">
+    <div class="flex items-center space-x-3">
+        {% if post.author.photo %}
+          <img src="{{ post.author.photo.url }}"
+               class="w-8 h-8 rounded-full object-cover"/>
+        {% else %}
+          <div class="w-8 h-8 rounded-full bg-zinc-700"></div>
+        {% endif %}
+        <a href="{{ post.author.get_absolute_url }}"
+           class="font-semibold text-zinc-100 hover:underline">
+          {{ post.author.username }}
+        </a>
+      </div>
+      {% if request.user != post.author %}
+        <button
+          class="suggest-follow-btn px-3 py-1 text-sm font-semibold rounded-md
+                 bg-purple-600 hover:bg-purple-500 transition"
+          data-user-id="{{ post.author.id }}"
+        >
+          {% if request.user in post.author.followers.all %}
+            Unfollow
+          {% else %}
+            Follow
+          {% endif %}
+        </button>
+      {% endif %}
+    </header>
+
+    {# — Comments list (scrollable) — #}
+    <div class="flex-1 overflow-y-auto px-4 py-3 space-y-4 comment-list">
+      {% if post.comments.exists %}
+        {% for comment in post.comments.all %}
+          <div class="flex items-start space-x-3">
+            {% if comment.user.photo %}
+              <img src="{{ comment.user.photo.url }}"
+                   class="w-8 h-8 rounded-full object-cover flex-none"/>
+            {% else %}
+              <div class="w-8 h-8 rounded-full bg-zinc-700 flex-none"></div>
+            {% endif %}
+            <div class="flex-1">
+              <p class="text-sm">
+                <span class="font-semibold">{{ comment.name }}</span>
+                {{ comment.body }}
+              </p>
+              <p class="text-xs text-zinc-500">{{ comment.created|naturaltime }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="italic text-zinc-500">No comments yet.</p>
+      {% endif %}
+    </div>
+
+    {# — Actions + Stats + Caption + Comment form — #}
+    <div class="px-4 py-3 bg-zinc-800 border-t border-zinc-700 space-y-4">
+
+      {# — action buttons: like, message, save — #}
+{#      <div class="flex items-center justify-between">#}
+{#        <div class="flex items-center space-x-4">#}
+{#          <!-- ❤️ Like -->#}
+{#          <button class="like-btn" data-post-id="{{ post.id }}">#}
+{#            <svg xmlns="http://www.w3.org/2000/svg"#}
+{#                 class="h-6 w-6 {% if user in post.likes.all %}text-red-500{% else %}text-zinc-300{% endif %}"#}
+{#                 fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
+{#              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"#}
+{#                    d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636#}
+{#                       l1.318-1.318a4.5 4.5 0 116.364 6.364L12#}
+{#                       21.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />#}
+{#            </svg>#}
+{#          </button>#}
+{#          <!-- 💬 Comment (مودال) -->#}
+{#          <button class="comment-btn"#}
+{#                  data-detail-url="{% url 'social:post_detail' post.id %}">#}
+{#            <svg xmlns="http://www.w3.org/2000/svg"#}
+{#                 class="h-6 w-6 text-zinc-300 hover:text-zinc-100 transition"#}
+{#                 fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
+{#              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"#}
+{#                    d="M8 10h.01M12 10h.01M16#}
+{#                       10h.01M21 12c0 4.418-4.03#}
+{#                       8-9 8a9.863 9.863 0#}
+{#                       01-5-.5L3 21l1.5-5A9.863#}
+{#                       9.863 0 013 12c0-4.418#}
+{#                       4.03-8 9-8s9 3.582 9 8z" />#}
+{#            </svg>#}
+{#          </button>#}
+{#          <!-- ✉️ Message -->#}
+{#          <button class="message-btn"#}
+{#                  data-recipient="{{ post.author.id }}"#}
+{#                  data-post-id="{{ post.id }}"#}
+{#                  title="Message">#}
+{#            <svg xmlns="http://www.w3.org/2000/svg"#}
+{#                 class="h-6 w-6 text-zinc-300 hover:text-zinc-100 transition"#}
+{#                 fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
+{#              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"#}
+{#                    d="M12 19l9-7-9-7-2 3 7 4-7 4 2 3z" />#}
+{#            </svg>#}
+{#          </button>#}
+{#        </div>#}
+{#        <!-- 🔖 Save -->#}
+{#        <button class="save-btn" data-post-id="{{ post.id }}">#}
+{#          <svg xmlns="http://www.w3.org/2000/svg"#}
+{#               class="h-6 w-6 {% if user in post.saved_by.all %}text-purple-400{% else %}text-zinc-300{% endif %}"#}
+{#               fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
+{#            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"#}
+{#                  d="M5 5v14l7-7 7 7V5H5z" />#}
+{#          </svg>#}
+{#        </button>#}
+{#      </div>#}
+
+      {# — likes count, caption, date — #}
+      <p class="likes-count font-semibold text-zinc-100">
+        {{ post.likes.count }} likes
+      </p>
+      <p>
+        <span class="font-semibold">{{ post.author.username }}</span>
+        {{ post.description }}
+      </p>
+      <p class="text-xs text-zinc-500">
+        {{ post.created|date:"j M Y" }}
+      </p>
+                {# — tags — #}
+        <p class="mt-1 space-x-2">
+          {% for tag in post.tags.all %}
+            <a href="{% url 'social:post_list_by_tag' tag.slug %}"
+               class="text-purple-400 hover:underline">#{{ tag.name }}</a>
+          {% endfor %}
+        </p>
+      {# — comment form — #}
+      <form class="comment-form flex items-center space-x-3"
+            action="{% url 'social:post_comment' post.id %}"
+            method="post">
+        {% csrf_token %}
+        <input type="text"
+               name="body"
+               placeholder="Add a comment…"
+               class="flex-1 bg-zinc-800 p-2 rounded text-zinc-100
+                      focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <button type="submit" class="font-semibold text-purple-400">
+          Post
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+<script src="{% static 'js/slider.js' %}" defer></script>
+</main>
+
+

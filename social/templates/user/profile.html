@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}{{ user.username }}’s Profile | Social Sphere{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6 space-y-6">
+
+  <!-- 1. PROFILE HEADER -->
+  <div class="flex items-center space-x-6">
+    {% if user.photo %}
+      <img src="{{ user.photo.url }}"
+           class="w-24 h-24 rounded-full object-cover"/>
+    {% else %}
+      <div class="w-24 h-24 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300 text-4xl">
+        {{ user.username|slice:":1"|upper }}
+      </div>
+    {% endif %}
+
+    <div class="flex-1 space-y-2">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-2xl font-light">{{ user.username }}</h1>
+        {% if is_self %}
+          <a href="{% url 'social:edit_account' %}"
+             class="px-4 py-1 border border-zinc-600 rounded text-sm hover:bg-zinc-700 transition">
+            Edit Profile
+          </a>
+        {% else %}
+          <div class="flex space-x-2">
+            <button id="profileFollowBtn"
+                    data-user-id="{{ user.id }}"
+                    class="px-4 py-1 border border-zinc-600 rounded text-sm hover:bg-zinc-700 transition">
+              {% if request.user in user.followers.all %}Unfollow{% else %}Follow{% endif %}
+            </button>
+            <a href="{% url 'social:inbox' %}?start={{ user.id }}"
+               class="px-4 py-1 border border-zinc-600 rounded text-sm hover:bg-zinc-700 transition">
+              Message
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      <div class="flex space-x-6">
+        <span><span class="font-semibold">{{ user.user_posts.count }}</span> posts</span>
+        <span id="followersBtn" class="cursor-pointer">
+          <span class="font-semibold">{{ followers|length }}</span> followers
+        </span>
+        <span id="followingBtn" class="cursor-pointer">
+          <span class="font-semibold">{{ following|length }}</span> following
+        </span>
+      </div>
+      {% if user.first_name or user.bio or user.job %}
+        <div class="pt-2 text-sm space-y-1">
+          {% if user.get_full_name != "" %}
+            <p class="font-semibold">{{ user.get_full_name }}</p>
+          {% endif %}
+          {% if user.job %}
+            <p>{{ user.job }}</p>
+          {% endif %}
+          {% if user.bio %}
+            <p>{{ user.bio }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 2. TABS -->
+  <div class="border-t border-zinc-700">
+    <nav class="flex space-x-8 justify-center">
+      <button id="tabPosts"
+              class="py-4 border-b-2 border-transparent hover:border-zinc-500 transition">
+        Posts
+      </button>
+      <button id="tabSaved"
+              class="py-4 border-b-2 border-transparent hover:border-zinc-500 transition">
+        Saved
+      </button>
+    </nav>
+  </div>
+
+  <!-- 3. GRIDS -->
+  <div id="postsGrid" class="grid grid-cols-3 gap-4"></div>
+  <div id="postsLoader" class="text-center py-4">Loading…</div>
+
+  <div id="savedGrid" class="hidden grid grid-cols-3 gap-4"></div>
+  <div id="savedLoader" class="hidden text-center py-4">Loading…</div>
+
+</div>
+
+<!-- 4. FOLLOWERS/FOLLOWING MODAL -->
+<div id="followModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-zinc-800 rounded-lg w-80 max-h-[80vh] overflow-y-auto">
+    <div class="flex justify-between items-center px-4 py-2 border-b border-zinc-700">
+      <h3 id="followModalTitle" class="text-lg font-semibold"></h3>
+      <button id="closeFollowModal" class="text-zinc-400 hover:text-white">✕</button>
+    </div>
+    <ul id="followModalList" class="divide-y divide-zinc-700"></ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    window.profileUrls = {
+      postsUrl:       "{% url 'social:profile-posts-ajax' user.username %}",
+      savedUrl:       "{% url 'social:profile-saved-ajax' user.username %}",
+      followersUrl:   "{% url 'social:profile-followers-ajax' user.username %}",
+      followingUrl:   "{% url 'social:profile-following-ajax' user.username %}",
+      followToggle:   "{% url 'social:user_follow' %}"
+    };
+    window.profileUserId = {{ user.id }};
+  </script>
+  <script src="{% static 'js/profile.js' %}" defer></script>
+{% endblock %}

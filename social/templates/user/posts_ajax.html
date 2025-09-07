@@ -1,0 +1,10 @@
+{% load static %}
+{% for post in page_obj %}
+  <a href="{% url 'social:post_detail' post.id %}"
+     class="block bg-zinc-800 rounded overflow-hidden group">
+    <img src="{{ post.images.first.image_file.url }}"
+         class="w-full h-32 object-cover transform group-hover:scale-110 transition"/>
+  </a>
+{% empty %}
+  <p class="col-span-3 text-center text-zinc-500 py-8">No posts yet.</p>
+{% endfor %}

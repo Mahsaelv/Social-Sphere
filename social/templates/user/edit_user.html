@@ -1,0 +1,148 @@
+{# templates/user/edit_user.html #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | Social Sphere{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8 space-y-6">
+
+  <div class="text-right">
+    <a class="px-4 py-2 mx-2 border border-zinc-600 rounded hover:bg-zinc-700 transition" href="{% url 'social:password_change' %}"
+       class="text-sm text-purple-400 hover:underline">
+      Change Password
+    </a>
+      <a class="px-4 py-2 mx-2 border border-zinc-600 rounded hover:bg-zinc-700 transition" href="{% url 'social:logout' %}"
+       class="text-sm text-purple-400 hover:underline">
+      logout
+    </a>
+  </div>
+
+{#    <div class="text-left">#}
+{#    <a class="px-4 py-2 border border-zinc-600 rounded hover:bg-zinc-700 transition" href="{% url 'social:logout' %}"#}
+{#       class="text-sm text-purple-400 hover:underline">#}
+{#      logout#}
+{#    </a>#}
+{#  </div>#}
+
+  <form method="post" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}
+
+    <div class="border border-zinc-700 rounded-lg">
+      <button type="button"
+              class="w-full flex justify-between items-center px-4 py-2 bg-zinc-800 hover:bg-zinc-700 focus:outline-none"
+              data-accordion-target="#accountInfo">
+        <span class="font-medium text-zinc-100">Account Information</span>
+        <svg class="h-5 w-5 text-zinc-400 transform transition-transform" data-accordion-icon fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="accountInfo" class="px-4 py-3 bg-zinc-900 hidden space-y-4">
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Username</label>
+          <input type="text" name="username" value="{{ user_form.instance.username }}"
+                 class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Email</label>
+          <input type="email" name="email" value="{{ user_form.instance.email }}"
+                 class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion Section: Personal Details -->
+    <div class="border border-zinc-700 rounded-lg">
+      <button type="button"
+              class="w-full flex justify-between items-center px-4 py-2 bg-zinc-800 hover:bg-zinc-700 focus:outline-none"
+              data-accordion-target="#personalDetails">
+        <span class="font-medium text-zinc-100">Personal Details</span>
+        <svg class="h-5 w-5 text-zinc-400 transform transition-transform" data-accordion-icon fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="personalDetails" class="px-4 py-3 bg-zinc-900 hidden space-y-4">
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Name</label>
+          <input type="text" name="first_name" value="{{ user_form.instance.first_name }}"
+                 class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Date of Birth</label>
+          <input type="date" name="date_of_birth" value="{{ user_form.instance.date_of_birth }}"
+                 class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Job</label>
+          <input type="text" name="job" value="{{ user_form.instance.job }}"
+                 class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion Section: Bio & Photo -->
+    <div class="border border-zinc-700 rounded-lg">
+      <button type="button"
+              class="w-full flex justify-between items-center px-4 py-2 bg-zinc-800 hover:bg-zinc-700 focus:outline-none"
+              data-accordion-target="#bioSection">
+        <span class="font-medium text-zinc-100">Bio &amp; Photo</span>
+        <svg class="h-5 w-5 text-zinc-400 transform transition-transform" data-accordion-icon fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div id="bioSection" class="px-4 py-3 bg-zinc-900 hidden space-y-4">
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Bio</label>
+          <textarea name="bio" rows="4"
+                    class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none">{{ user_form.instance.bio }}</textarea>
+        </div>
+        <div>
+          <label class="block mb-1 text-sm text-zinc-300">Profile Photo</label>
+          <input type="file" name="photo"
+                 class="w-full bg-zinc-700 p-2 rounded text-zinc-100 focus:outline-none" />
+          <div id="previewContainer" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit / Cancel Buttons -->
+    <div class="flex justify-end space-x-3 pt-4">
+      <a href="{% url 'social:profile' request.user.username %}"
+         class="px-4 py-2 border border-zinc-600 rounded hover:bg-zinc-700 transition">
+        Cancel
+      </a>
+      <button type="submit"
+              class="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition">
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    // Accordion toggle
+    document.querySelectorAll('[data-accordion-target]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const content = document.querySelector(btn.dataset.accordionTarget);
+        const icon = btn.querySelector('[data-accordion-icon]');
+        content.classList.toggle('hidden');
+        icon.classList.toggle('-rotate-180');
+      });
+    });
+
+    // Profile photo preview
+    const photoInput = document.querySelector('input[name="photo"]');
+    const preview = document.getElementById('previewContainer');
+    if (photoInput) {
+      photoInput.addEventListener('change', () => {
+        const file = photoInput.files[0];
+        if (!file) return preview.innerHTML = '';
+        const url = URL.createObjectURL(file);
+        preview.innerHTML = `<img src="${url}" class="w-24 h-24 rounded-full object-cover"/>`;
+      });
+    }
+  </script>
+{% endblock %}

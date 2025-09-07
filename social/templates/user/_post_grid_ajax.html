@@ -1,0 +1,15 @@
+{# AJAX partial for both “posts” and “saved” grids #}
+{% load static %}
+{% for post in posts %}
+  <a href="{{ post.get_absolute_url }}"
+     class="block relative w-full aspect-square bg-zinc-700 overflow-hidden rounded-lg">
+    {% with img=post.images.first %}
+      {% if img %}
+        <img src="{{ img.image_file.url }}"
+             class="absolute inset-0 w-full h-full object-cover"/>
+      {% endif %}
+    {% endwith %}
+  </a>
+{% empty %}
+  <p class="col-span-3 text-center text-zinc-500">No posts found.</p>
+{% endfor %}

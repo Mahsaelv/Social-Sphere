@@ -1,0 +1,21 @@
+{% for user in users %}
+  <a href="{% url 'social:profile' user.username %}"
+     class="flex items-center space-x-3 p-2 rounded-lg hover:bg-zinc-700 transition">
+    <img
+      src="{{ user.photo.url|default:'/static/images/default_avatar.png' }}"
+      alt="{{ user.username }}"
+      class="h-8 w-8 rounded-full object-cover border-2 border-purple-400"
+    >
+    <div class="flex-1">
+      <p class="text-zinc-100 font-medium">{{ user.username }}</p>
+      <p class="text-zinc-400 text-sm">{{ user.bio|default:''|truncatechars:30 }}</p>
+    </div>
+    <button class="message-btn text-zinc-300 hover:text-zinc-100 transition"
+            data-recipient="{{ user.id }}"
+            title="Send private message">
+      ✉️
+    </button>
+  </a>
+{% empty %}
+  <p class="text-zinc-500 px-4">No users found.</p>
+{% endfor %}

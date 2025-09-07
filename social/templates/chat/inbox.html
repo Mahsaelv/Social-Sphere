@@ -1,0 +1,72 @@
+{# templates/chat/inbox.html #}
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Messages | Social Sphere{% endblock %}
+
+{% block content %}
+<main class="flex h-[calc(100vh-4rem)] bg-zinc-900">
+  <!-- LEFT SIDEBAR -->
+  <aside class="w-1/4 bg-zinc-800 overflow-y-auto">
+    <h2 class="px-4 py-3 text-zinc-200 font-semibold">Messages</h2>
+    <ul>
+      {% for item in threads_data %}
+        {% with thread=item.thread partner=item.partner unread=item.unread_count %}
+          {% if partner %}
+            <li class="thread-item relative flex items-center px-4 py-3 hover:bg-zinc-700 cursor-pointer
+                      {% if selected_thread and thread.id == selected_thread.id %}bg-zinc-700{% endif %}"
+                data-recipient="{{ partner.id }}">
+              {% if partner.photo %}
+                <img src="{{ partner.photo.url }}" class="w-10 h-10 rounded-full object-cover mr-3"/>
+              {% else %}
+                <div class="w-10 h-10 rounded-full bg-zinc-600 mr-3"></div>
+              {% endif %}
+              <div class="flex-1 overflow-hidden">
+                <p class="text-zinc-100 font-semibold truncate">
+                  {{ partner.get_full_name|default:partner.username }}
+                </p>
+                {% with last=thread.messages.last %}
+                  <p class="text-zinc-500 text-xs truncate">
+                    {{ last.content|truncatechars:20 }}
+                  </p>
+                {% endwith %}
+              </div>
+              {% if unread > 0 %}
+                <span class="absolute right-4 top-1/2 -translate-y-1/2
+                             bg-red-500 text-white text-[10px] font-semibold
+                             w-5 h-5 flex items-center justify-center
+                             rounded-full">
+                  {{ unread }}
+                </span>
+              {% endif %}
+            </li>
+          {% endif %}
+        {% endwith %}
+      {% empty %}
+        <li class="px-4 py-3 text-zinc-500">No conversations yet.</li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <section class="flex-1 flex flex-col h-full overflow-hidden">
+    {% if selected_thread %}
+      {% include 'chat/thread_detail.html' %}
+    {% else %}
+      <div class="flex-1 flex items-center justify-center text-zinc-500 italic">
+        Select a conversation to start chatting.
+      </div>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    window.socialUrls = {
+      inboxUrl: "{% url 'social:inbox' %}"
+    };
+  </script>
+  <script src="{% static 'js/chat.js' %}" defer></script>
+{% endblock %}

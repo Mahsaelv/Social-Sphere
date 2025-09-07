@@ -1,0 +1,115 @@
+{# templates/chat/thread_detail.html #}
+{% load static humanize %}
+
+<div class="flex-1 flex flex-col h-full overflow-hidden">
+
+  <!-- Chat Header -->
+  <header class="flex items-center px-4 py-3 bg-zinc-800 border-b border-zinc-700 flex-shrink-0">
+    {% if partner.photo %}
+      <img src="{{ partner.photo.url }}" class="w-8 h-8 rounded-full object-cover mr-3"/>
+    {% else %}
+      <div class="w-8 h-8 rounded-full bg-zinc-700 mr-3"></div>
+    {% endif %}
+    <p class="text-zinc-100 font-semibold">
+      {{ partner.get_full_name|default:partner.username }}
+    </p>
+  </header>
+
+  <!-- Message list -->
+  <div id="messageList" class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+
+    {% for msg in messages %}
+
+      {# — Shared-post bubble — #}
+      {% if msg.shared_post %}
+        {% if msg.sender == request.user %}
+          <div class="flex justify-end">
+            <div class="max-w-[70%]">
+              <div class="px-4 py-2 bg-zinc-700 text-zinc-100 rounded-lg">
+                <a href="{{ msg.shared_post.get_absolute_url }}" target="_blank" class="block">
+                  {% with img=msg.shared_post.images.first %}
+                    {% if img %}
+                      <img src="{{ img.image_file.url }}"
+                           class="w-full h-auto rounded-lg mb-1"/>
+                    {% endif %}
+                  {% endwith %}
+                  {{ msg.shared_post.description|truncatechars:80 }}
+                </a>
+              </div>
+              <p class="text-xs text-purple-300 mt-1">{{ msg.timestamp|date:"h:i A" }}</p>
+            </div>
+          </div>
+        {% else %}
+          <div class="flex items-start space-x-3">
+            {% if msg.sender.photo %}
+              <img src="{{ msg.sender.photo.url }}" class="w-8 h-8 rounded-full flex-none"/>
+            {% else %}
+              <div class="w-8 h-8 rounded-full bg-zinc-700 flex-none"></div>
+            {% endif %}
+            <div class="max-w-[70%]">
+              <div class="px-4 py-2 bg-zinc-700 text-zinc-100 rounded-lg">
+                <a href="{{ msg.shared_post.get_absolute_url }}" target="_blank" class="block">
+                  {% with img=msg.shared_post.images.first %}
+                    {% if img %}
+                      <img src="{{ img.image_file.url }}"
+                           class="w-full h-auto rounded-lg mb-1"/>
+                    {% endif %}
+                  {% endwith %}
+                  {{ msg.shared_post.description|truncatechars:80 }}
+                </a>
+              </div>
+              <p class="text-xs text-zinc-500 mt-1">{{ msg.timestamp|date:"h:i A" }}</p>
+            </div>
+          </div>
+        {% endif %}
+
+      {# — Your text message — #}
+      {% elif msg.sender == request.user %}
+        <div class="flex justify-end">
+          <div>
+            <div class="px-4 py-2 bg-purple-600 text-white rounded-lg">
+              {{ msg.content }}
+            </div>
+            <p class="text-xs text-purple-300 mt-1">{{ msg.timestamp|date:"h:i A" }}</p>
+          </div>
+        </div>
+
+      {# — Partner’s text message — #}
+      {% else %}
+        <div class="flex items-start space-x-3">
+          {% if msg.sender.photo %}
+            <img src="{{ msg.sender.photo.url }}" class="w-8 h-8 rounded-full flex-none"/>
+          {% else %}
+            <div class="w-8 h-8 rounded-full bg-zinc-700 flex-none"></div>
+          {% endif %}
+          <div>
+            <div class="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg">
+              {{ msg.content }}
+            </div>
+            <p class="text-xs text-zinc-500 mt-1">{{ msg.timestamp|date:"h:i A" }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+    {% endfor %}
+  </div>
+
+  <!-- Chat input form -->
+  <form id="chatForm"
+        class="chat-form flex-shrink-0 flex items-center px-4 py-3 bg-zinc-800 border-t border-zinc-700"
+        action="{% url 'social:thread-detail' selected_thread.id %}"
+        method="post">
+    {% csrf_token %}
+    <input name="content"
+           type="text"
+           placeholder="Message…"
+           autocomplete="off"
+           class="flex-1 bg-zinc-700 px-4 py-2 rounded-full text-zinc-100
+                  focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+    <button type="submit"
+            class="ml-3 text-purple-400 font-semibold hover:text-purple-300">
+      Send
+    </button>
+  </form>
+
+</div>

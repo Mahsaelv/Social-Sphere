@@ -1,0 +1,110 @@
+{# templates/includes/sidebar.html #}
+<nav class="fixed top-0 left-0 h-full w-64 bg-zinc-800
+            flex flex-col items-start py-6 space-y-4 px-6 text-zinc-200 z-20">
+
+  <!-- عنوان بالای سایدبار -->
+  <div class="w-full mb-8 text-3xl italic font-semibold text-purple-400">
+    SocialSphere
+  </div>
+
+  <!-- Home -->
+  <a href="{% url 'social:post_list' %}"
+     class="inline-flex items-center space-x-3 hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l9-9 9 9v9a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    </svg>
+    <span class="font-medium">Home</span>
+  </a>
+
+  <!-- Create -->
+  <a href="{% url 'social:create_post' %}"
+     class="inline-flex items-center space-x-3 hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 4v16m8-8H4" />
+    </svg>
+    <span class="font-medium">Create</span>
+  </a>
+
+  <!-- Search -->
+  <button id="openSearch"
+          class="w-full text-left inline-flex items-center space-x-3 hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+    </svg>
+    <span class="font-medium">Search</span>
+  </button>
+
+  <!-- Explore -->
+  <a href="{% url 'social:explore' %}"
+     class="inline-flex items-center space-x-3 hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 13l4 4L19 7M12 2v20M2 12h20" />
+    </svg>
+    <span class="font-medium">Explore</span>
+  </a>
+
+  <!-- Messages -->
+  <a href="{% url 'social:inbox' %}"
+     class="relative inline-flex items-center space-x-3 hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863
+               9.863 0 01-5-.5L3 21l1.5-5A9.863
+               9.863 0 013 12c0-4.418 4.03-8 9-8s9
+               3.582 9 8z" />
+    </svg>
+      <span class="font-medium">Messages</span>
+  {% if unread_messages_count %}
+      <span class="ml-auto mr-2 inline-flex items-center justify-center
+                   bg-red-500 text-white text-xs font-semibold
+                   rounded-full w-5 h-5">
+      {{ unread_messages_count }}
+        </span>
+    {% endif %}
+  </a>
+
+
+ <!-- Notifications -->
+  <a href="{% url 'social:notifications' %}"
+     class="inline-flex items-center hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 17h5l-1.405-1.405A2.032 2.032
+               0 0118 14.158V11a6 6 0 10-12 0v3.159c0
+               .538-.214 1.055-.595 1.436L4 17h5m6
+               0v1a3 3 0 11-6 0v-1m6 0H9" />
+    </svg>
+    <span class="ml-3 font-medium">Notifications</span>
+    {% if notifications_count > 0 %}
+      <span class="ml-auto mr-2 inline-flex items-center justify-center
+                   bg-red-500 text-white text-xs font-semibold
+                   rounded-full w-5 h-5">
+        {{ notifications_count }}
+      </span>
+    {% endif %}
+  </a>
+
+
+  <!-- Profile -->
+     <a href="{% url 'social:profile' request.user.username %}"
+   class="inline-flex items-center space-x-3 hover:text-purple-300 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 3v4M19 3v4M4 21h16M12 7a5 5 0
+               015 5v4H7v-4a5 5 0 015-5z" />
+    </svg>
+    <span class="font-medium">Profile</span>
+  </a>
+
+</nav>

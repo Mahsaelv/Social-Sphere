@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static humanize %}
+
+
+{% block title %}Notifications | SocialSphere{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto py-10 space-y-4">
+  <h1 class="text-2xl font-bold text-purple-400 mb-6">Notifications</h1>
+  <ul class="space-y-2">
+    {% for notif in notifications %}
+      <li class="flex items-center justify-between bg-zinc-800 p-4 rounded-lg">
+        <!-- آواتار و متن -->
+        <div class="flex items-center space-x-3">
+          <img src="{{ notif.actor.photo.url }}" alt=""
+               class="w-10 h-10 rounded-full object-cover"/>
+          <div class="text-zinc-100 text-sm">
+            <span class="font-semibold">{{ notif.actor.username }}</span>
+            {{ notif.verb }}
+            {% if notif.target %}
+              <a href="{{ notif.target.get_absolute_url }}" class="underline">…</a>
+            {% endif %}
+            <div class="text-zinc-500 text-xs">{{ notif.timestamp|naturaltime }}</div>
+          </div>
+        </div>
+        <!-- نقطهٔ قرمز حذف/علامت‌گذاری -->
+        {% if notif.unread %}
+          <button class="notif-mark-read-btn text-red-500 text-2xl"
+                  data-url="{% url 'social:mark_notification_read' notif.id %}">
+            •
+          </button>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="text-zinc-500 italic">You have no notifications.</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<!-- اسکریپت برای AJAX -->
+<script src="{% static 'js/notifications.js' %}" defer></script>
+{% endblock %}
