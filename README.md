@@ -31,14 +31,14 @@ A modern social media platform built with **Django**, providing features such as
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/socialsphere.git
+   git clone https://github.com/Mahsaelv/Social-Sphere.git
    cd socialsphere
    ```
 
 2. Create and activate a virtual environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate   # On Windows: venv\Scripts\activate
+   source venv/bin/activate 
    ```
 
 3. Install dependencies:
